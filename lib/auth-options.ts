@@ -5,10 +5,16 @@ import { JWT } from "next-auth/jwt";
 
 
 export const authOptions:NextAuthOptions = {
+    // debug: true,
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+            authorization:{
+                params:{
+                    scope:"openid profile email https://www.googleapis.com/auth/youtube.upload"
+                }
+            }
         })
     ],
     pages:{
@@ -26,7 +32,7 @@ export const authOptions:NextAuthOptions = {
 
             try {
                 // console.log("signIn",account);
-                // console.log(profile);
+                // console.log(profile);https://www.googleapis.com/auth/youtube.upload
                 if(account?.provider === "google"){
                     const user = await prisma.user.findUnique({
                         where:{
@@ -73,13 +79,15 @@ export const authOptions:NextAuthOptions = {
 
         async session({session, token}:{session:Session, token:JWT}){
             try {
+                // console.log(session);
+                // console.log(token);
                 const user = await prisma.user.findUnique({
                     where:{
                         email: token.email as string
                     }
                 })
                 
-                if (user) {
+                if (user && token) {
                     session.user = {
                       id: token.id as string,
                       email: token.email as string,
