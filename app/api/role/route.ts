@@ -40,9 +40,6 @@ export async function POST (req: NextRequest){
         })
 
         if(data.role === "CREATOR"){
-            session.user.role = "CREATOR";
-
-            console.log(session);
 
             const creator = await prisma.creator.upsert({
                 where:{
@@ -57,7 +54,6 @@ export async function POST (req: NextRequest){
             })
         }
         else if(data.role === "EDITOR"){
-            session.user.role = "EDITOR";
 
             const editor = await prisma.editor.upsert({
                 where:{

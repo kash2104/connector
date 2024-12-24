@@ -88,6 +88,7 @@ export const authOptions:NextAuthOptions = {
                 })
                 
                 if (user && token) {
+                    token.role = user.role;
                     session.user = {
                       id: token.id as string,
                       email: token.email as string,
