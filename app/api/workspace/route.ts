@@ -111,7 +111,16 @@ export async function DELETE(req:NextRequest){
     
         //delete the videos in the workspace i.e. delete workspace.videos from db as well as cloud
         for(const video of workspace.videos){
-            deleteFromCloud(video.videoUrl);
+            const videopart = video.videoUrl.split("/");
+            const videoid = videopart[videopart.length - 1].split(".")[0];
+            const videopublicId = `Connector/videos/${videoid}`;
+            await deleteFromCloud(videopublicId, "video");
+
+            const thumbnailpart = video.thumbnailUrl.split("/");
+            const thumbnailid = thumbnailpart[thumbnailpart.length - 1].split(".")[0];
+            const thumbnailpublicId = `Connector/thumbnails/${thumbnailid}`;
+            await deleteFromCloud(thumbnailpublicId, "image");
+
             await prisma.video.delete({
                 where:{
                     id: video.id
