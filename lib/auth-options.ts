@@ -70,6 +70,7 @@ export const authOptions:NextAuthOptions = {
                     role: "USER",
                     email: user?.email,
                     name: user?.name,
+                    refresh_token: account?.refresh_token
 
                 }
             }
@@ -94,6 +95,8 @@ export const authOptions:NextAuthOptions = {
                       email: token.email as string,
                       name: user.name,
                       role: token.role as string,
+                      access_token: token.access_token as string,
+                      refresh_token: token.refresh_token as string
                     };
                 }
 
