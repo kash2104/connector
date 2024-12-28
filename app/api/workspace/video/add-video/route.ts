@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/db";
-import { cloudConnect, uploadImage, uploadVideo } from "@/lib/util";
+import { cloudConnect, uploadImage, uploadVideo } from "@/lib/config";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
