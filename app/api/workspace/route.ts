@@ -4,6 +4,49 @@ import { deleteFromCloud } from "@/lib/config";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+export async function GET(req: NextRequest){
+    try {
+        const session = await getServerSession(authOptions);
+    
+        if(!session?.user){
+            return NextResponse.json(
+                {success: false, message:"Unauthorized"},
+                {status: 401}
+            )
+        }
+        
+        
+        const workspaceId = req.nextUrl.searchParams.get("workspaceId");
+        const workspace = await prisma.workspace.findUnique({
+            where:{
+                id: workspaceId as string
+            },
+            include:{
+                videos: true
+            }
+        })
+
+        if(!workspace){
+            return NextResponse.json(
+                {success: false, message: "Workspace not found"},
+                {status:401}
+            )
+        }
+        
+    
+        return NextResponse.json(
+            {success: true, message: "Got the workspace", workspace: workspace},
+            {status: 200}
+        )
+        
+    } catch (error) {
+        return NextResponse.json(
+            {success:false, message:"Error while getting worskpaces"},
+            {status: 500}
+        )
+    }
+}
+
 export async function POST(req: NextRequest){
     try {
         const session = await getServerSession(authOptions);
