@@ -16,7 +16,7 @@ export default function Hero() {
             <Link href="/signup">Start Free Trial</Link>
           </Button> */}
           <Button asChild variant="outline" size="lg" className="text-[#38BDF8] border-[#38BDF8] hover:bg-[#38BDF8] hover:text-white">
-            <Link href="#features">Get Started</Link>
+            <Link href="/auth">Get Started</Link>
           </Button>
         </div>
       </div>
