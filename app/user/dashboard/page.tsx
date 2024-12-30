@@ -4,6 +4,8 @@ import Error from "@/app/components/Error/page";
 import Loading from "@/app/components/Loading/page";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog";
+import { Input } from "@/app/components/ui/input";
 import { FolderOpen } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -51,24 +53,85 @@ export default function CreatorDashboard() {
     fetchWorkspace();
   }, [params,session]);
 
+  //creatiing a new workspace
+  const [newWorkspaceName, setNewWorkspaceName] = useState('')
+  const [isCreating, setIsCreating] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleCreateWorkspace = async(event: React.FormEvent) => {
+    event.preventDefault();
+    if(!newWorkspaceName.trim()) return;
+
+    setIsCreating(true);
+    try {
+      const response = await fetch(
+        '/api/workspace',
+        {
+          method: 'POST', 
+          body: JSON.stringify({name: newWorkspaceName.trim()}), 
+          headers: {'Content-Type': 'application/json'}
+        })
+
+        const data = await response.json();
+
+        setWorkspaces([...workspaces, data.workspace])
+        setNewWorkspaceName('')
+        setIsDialogOpen(false)
+    } catch (error) {
+      return(
+        <div>
+          <Error/>
+        </div>
+      )
+    }finally{
+      setIsCreating(false)
+    }
+  }
+
   if (loading) {
     return <Loading />;
   }
 
   if (error || session?.data?.user?.name !== name) {
-    return <Error />;
+    return <Error/>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold text-white">My Workspaces</h1>
-        <Button
-          asChild
-          className="bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-semibold py-2 px-4 rounded shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          <Link href="/creator/new-workspace">Create New Workspace</Link>
-        </Button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h1 className="text-3xl font-bold text-white">Creator Dashboard</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="w-full sm:w-auto bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-semibold py-2 px-4 rounded shadow-lg hover:shadow-xl transition-all duration-300">
+              {/* <PlusCircle className="w-5 h-5 mr-2" /> */}
+              Create New Workspace
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-[#1E293B] border-[#334155] text-white sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-center">Create New Workspace</DialogTitle>
+              <DialogDescription className="text-center">
+                Enter a name for your new workspace
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateWorkspace} className="space-y-4 mt-4">
+              <Input
+                type="text"
+                placeholder="Workspace Name"
+                value={newWorkspaceName}
+                onChange={(e) => setNewWorkspaceName(e.target.value)}
+                className="bg-[#0F172A] border-[#334155] text-white"
+              />
+              <Button 
+                type="submit" 
+                disabled={isCreating} 
+                className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-semibold py-2 px-4 rounded shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                {isCreating ? 'Creating...' : 'Create Workspace'}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -85,7 +148,7 @@ export default function CreatorDashboard() {
                   asChild
                   className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-semibold py-2 px-4 rounded shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <Link href={`/creator/workspace/${workspace.id}`}>Open Workspace</Link>
+                  <Link href={`/user/workspace/${workspace.id}`}>Open Workspace</Link>
                 </Button>
               </div>
             </CardContent>
