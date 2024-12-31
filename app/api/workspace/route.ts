@@ -22,7 +22,8 @@ export async function GET(req: NextRequest){
                 id: workspaceId as string
             },
             include:{
-                videos: true
+                videos: true,
+                editors: true
             }
         })
 
