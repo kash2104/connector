@@ -148,7 +148,7 @@ export default function CreatorDashboard() {
                   asChild
                   className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-semibold py-2 px-4 rounded shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <Link href={`/user/workspace/${workspace.id}`}>Open Workspace</Link>
+                  <Link href={`/user/workspace?workspaceId=${workspace.id}`}>Open Workspace</Link>
                 </Button>
               </div>
             </CardContent>
