@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Trash2, Upload, UserMinus, Play } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
@@ -9,6 +9,7 @@ import { Button } from '@/app/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/app/components/ui/dialog'
 import Error from '@/app/components/Error/page'
 import Loading from '@/app/components/Loading/page'
+import { useSession } from 'next-auth/react'
 
 // Mock data
 type WorkspaceType = {
@@ -135,14 +136,31 @@ export default function WorkspacePage() {
             }
         } catch (error) {
             console.error('Failed to upload video:', error)
+            setError(true)
         } finally {
             setIsUploadConfirmOpen(false)
         }
         setLoading(false);
     }
 
+    const router = useRouter();
+    const session = useSession();
     const handleConfirmedWorkspaceDelete= async() => {
+        setLoading(true)
+        try {
+            const response = await fetch(`/api/workspace?workspaceId=${workspaceId}`,{
+                method: 'DELETE'
+            })
 
+            if(response.ok){
+                setWorkspace(null)
+                router.push(`/user/dashboard?name=${session?.data?.user?.name}`)
+            }
+        } catch (error) {
+            console.error('Failed to upload video:', error)
+            setError(true)
+        }
+        setLoading(false)
     }
 
     if (error) {
