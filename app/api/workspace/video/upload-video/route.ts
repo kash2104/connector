@@ -62,6 +62,13 @@ export async function POST(req: NextRequest){
             refresh_token: session?.user?.refresh_token
         })
 
+        if(!oauth2Client){
+            return NextResponse.json(
+                {success:false, message:"Failed to authenticate with google. Login again"},
+                {status:401}
+            )
+        }
+
         const youtube = google.youtube({
             version: "v3",
             auth: oauth2Client
@@ -84,11 +91,10 @@ export async function POST(req: NextRequest){
                 requestBody: {
                     snippet: {
                         title: video.title,
-                        description: video.description,
-                        tags: video.tags,
-                        thumbnails: { default: { url: video.thumbnailUrl } },
+                        // description: video.description,
+                        // tags: video.tags,
                     },
-                    status: { privacyStatus: "public" },
+                    status: { privacyStatus: "private" },
                 },
                 media: {
                     body: readableStream,
@@ -96,10 +102,37 @@ export async function POST(req: NextRequest){
             });
         } catch (error:any) {
             return NextResponse.json(
-                { success: false, message: `YouTube API error: ${error.message}` },
+                { success: false, message: `YouTube API video error: ${error.message}` },
                 { status: 500 }
             );
         }
+
+        // let youtubeVideoId = result?.data.id;
+
+        // //set the thubmnail
+        // try {
+        //     const thumbnailResponse = await fetch(video.thumbnailUrl);
+        //     if (!thumbnailResponse.ok || !thumbnailResponse.body) {
+        //         return NextResponse.json(
+        //             { success: false, message: "Failed to fetch thumbnail content" },
+        //             { status: 500 }
+        //         );
+        //     }
+
+        //     const thumbnailStream = Readable.from(thumbnailResponse.body as any);
+
+        //     await youtube.thumbnails.set({
+        //         videoId: youtubeVideoId!,
+        //         media: {
+        //             body: thumbnailStream,
+        //         },
+        //     });
+        // } catch (error:any) {
+        //     return NextResponse.json(
+        //         { success: false, message: `YouTube API thumbnail error: ${error.message}` },
+        //         { status: 500 }
+        //     );
+        // }
        
 
         await prisma.video.update({

@@ -62,11 +62,11 @@ export async function POST(req: NextRequest){
         const formData = await req.formData();
         
         const video = formData.get("video") as File | null;
-        const thumbnail = formData.get("thumbnail") as File | null;
+        // const thumbnail = formData.get("thumbnail") as File | null;
         const title = formData.get("title") as string;
-        const description = formData.get("description") as string;
-        const tagArray = formData.get("tags") as string;
-        const tags = tagArray.split(',');
+        // const description = formData.get("description") as string;
+        // const tagArray = formData.get("tags") as string;
+        // const tags = tagArray.split(',');
         // console.log(tagArray);
         // console.log(tags);
 
@@ -87,17 +87,18 @@ export async function POST(req: NextRequest){
         
         await cloudConnect();
 
-        const thumbnailUploadDetails = await uploadImage(thumbnail, process.env.CLOUD_THUMBNAIL_FOLDER);
+        // const thumbnailUploadDetails = await uploadImage(thumbnail, process.env.CLOUD_THUMBNAIL_FOLDER);
         const videoUploadDetails = await uploadVideo(video, process.env.CLOUD_VIDEO_FOLDER);
     
         const newVideo = await prisma.video.create({
             data:{
                 title: title,
-                description: description,
-                thumbnailUrl: thumbnailUploadDetails.secure_url,
+                description: "",
+                // thumbnailUrl: thumbnailUploadDetails.secure_url,
+                thumbnailUrl: "",
                 videoUrl: videoUploadDetails.secure_url,
                 workspaceId: workspace.id,
-                tags: tags,
+                tags: [],
                 status: "PENDING"
             }
         })

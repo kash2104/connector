@@ -59,10 +59,10 @@ export async function DELETE(req: NextRequest){
         
         await cloudConnect();
 
-        const thumbnailDelete = await deleteFromCloud(data.thumbnailPublicId, "image");
+        // const thumbnailDelete = await deleteFromCloud(data.thumbnailPublicId, "image");
         const videoDelete = await deleteFromCloud(data.videoPublicId, "video");
 
-        if(!thumbnailDelete || !videoDelete){
+        if(!videoDelete){
             return NextResponse.json(
                 {status:false, message:"Error deleting from cloud"},
                 {status:500}
