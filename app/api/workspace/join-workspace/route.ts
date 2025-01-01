@@ -73,7 +73,7 @@ export async function POST(req: NextRequest){
 
         
         return NextResponse.json(
-            {success:true, message:"Joined the workspace"},
+            {success:true, message:"Joined the workspace", workspace:workspace},
             {status:200}
         )
         
