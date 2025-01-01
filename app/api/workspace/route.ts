@@ -17,15 +17,29 @@ export async function GET(req: NextRequest){
         
         
         const workspaceId = req.nextUrl.searchParams.get("workspaceId");
-        const workspace = await prisma.workspace.findUnique({
-            where:{
-                id: workspaceId as string
-            },
-            include:{
-                videos: true,
-                editors: true
-            }
-        })
+        let workspace;
+        if(session?.user?.role === "CREATOR"){
+            workspace = await prisma.workspace.findUnique({
+                where:{
+                    id: workspaceId as string
+                },
+                include:{
+                    videos: true,
+                    editors: true
+                }
+            })
+        }
+        else if(session?.user?.role === "EDITOR"){
+            workspace = await prisma.workspace.findUnique({
+                where:{
+                    id: workspaceId as string
+                },
+                include:{
+                    videos: true,
+                    creator: true,
+                }
+            })
+        }
 
         if(!workspace){
             return NextResponse.json(
@@ -160,10 +174,10 @@ export async function DELETE(req:NextRequest){
             const videopublicId = `Connector/videos/${videoid}`;
             await deleteFromCloud(videopublicId, "video");
 
-            const thumbnailpart = video.thumbnailUrl.split("/");
-            const thumbnailid = thumbnailpart[thumbnailpart.length - 1].split(".")[0];
-            const thumbnailpublicId = `Connector/thumbnails/${thumbnailid}`;
-            await deleteFromCloud(thumbnailpublicId, "image");
+            // const thumbnailpart = video.thumbnailUrl.split("/");
+            // const thumbnailid = thumbnailpart[thumbnailpart.length - 1].split(".")[0];
+            // const thumbnailpublicId = `Connector/thumbnails/${thumbnailid}`;
+            // await deleteFromCloud(thumbnailpublicId, "image");
 
             await prisma.video.delete({
                 where:{
