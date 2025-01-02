@@ -239,7 +239,7 @@ export default function CreatorWorkspacePage() {
                             <div key={video.id} className="bg-[#0F172A] p-4 rounded-md space-y-3">
                                 <div className="relative aspect-video">
                                     <Image
-                                        src="https://res.cloudinary.com/dbgkicjy0/image/upload/v1735731283/Connector/iz3l4qpuxwo74fhlctul.jpg"
+                                        src={`${process.env.VIDEO_THUMBNAIL_IMAGE_SRC}`}
                                         alt={video.title}
                                         layout="fill"
                                         objectFit="cover"
