@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/db";
-import { deleteFromCloud } from "@/lib/config";
+import { cloudConnect, deleteFromCloud } from "@/lib/config";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -37,8 +37,17 @@ export async function GET(req: NextRequest){
                 include:{
                     videos: true,
                     creator: true,
+                    editors: true,
                 }
             })
+
+            const editorExists = workspace?.editors.some((e) => e.id === session?.user?.id);
+            if(!editorExists){
+                return NextResponse.json(
+                    {success: false, message: "You are not a part of this workspace. Please contact the creator"},
+                    {status: 401}
+                )
+            }
         }
 
         if(!workspace){
@@ -166,7 +175,8 @@ export async function DELETE(req:NextRequest){
                 {status:403}
             )
         }
-    
+        
+        await cloudConnect();
         //delete the videos in the workspace i.e. delete workspace.videos from db as well as cloud
         for(const video of workspace.videos){
             const videopart = video.videoUrl.split("/");
