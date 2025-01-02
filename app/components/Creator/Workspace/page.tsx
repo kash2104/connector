@@ -313,7 +313,7 @@ export default function CreatorWorkspacePage() {
                         <DialogTitle>Confirm Upload to YouTube</DialogTitle>
                     </DialogHeader>
                     <DialogDescription className="text-sm text-gray-300 mt-2">
-                        Once the video is uploaded to YouTube as private, this workspace will be deleted. Are you sure you want to proceed?
+                        Once the video is uploaded to <span className='text-red-600 font-semibold'>YouTube as private</span>, this workspace will be deleted. Are you sure you want to proceed?
                     </DialogDescription>
                     <div className="flex justify-end space-x-2 mt-4">
                         <Button variant="outline" onClick={() => setIsUploadConfirmOpen(false)}>
