@@ -68,6 +68,13 @@ export default function EditorWorkspacePage() {
         fetchWorkspace()
     }, [workspaceId,session])
 
+    useEffect(() => {
+        if (!isAddVideoDialogOpen) {
+          setNewVideoTitle('')
+          setVideoFile(null)
+        }
+    }, [isAddVideoDialogOpen])
+
     const handleAddVideo = async() => {
         setIsAddVideoDialogOpen(true)
     }
@@ -303,19 +310,31 @@ export default function EditorWorkspacePage() {
                     <DialogDescription>The video will be added to the workspace</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmitNewVideo} className="space-y-4 mt-4">
-                    <Input
-                    type="text"
-                    placeholder="Video Title"
-                    value={newVideoTitle}
-                    onChange={(e) => setNewVideoTitle(e.target.value)}
-                    className="bg-[#0F172A] border-[#334155] text-white"
-                    />
-                    <Input
-                    type="file"
-                    accept="video/*"
-                    onChange={handleVideoUpload}
-                    className="bg-[#0F172A] border-[#334155] text-white"
-                    />
+                    <div>
+                        <label htmlFor="video-title" className="text-[#38BDF8]">Video Title</label>
+                        <Input
+                        type="text"
+                        id="video-title"
+                        placeholder="Video Title"
+                        value={newVideoTitle}
+                        onChange={(e) => setNewVideoTitle(e.target.value)}
+                        className="bg-[#0F172A] border-[#334155] text-white"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="video-file" className="text-[#38BDF8]">Choose Video File</label>
+                        <Input
+                        id='video-file'
+                        type="file"
+                        accept="video/*"
+                        onChange={handleVideoUpload}
+                        // className="bg-[#0F172A] border-[#334155] text-white"
+                        className='bg-[#0F172A] border-[#334155] text-[#38BDF8] mt-1 file:bg-[#38BDF8] file:text-[#0F172A] file:border-0 file:rounded-md file:px-2 file:py-[0.75] file:mr-2 hover:file:bg-[#0EA5E9]'
+                        />
+
+                    </div>
+
                     <Button 
                     type="submit" 
                     disabled={!newVideoTitle || !videoFile}
