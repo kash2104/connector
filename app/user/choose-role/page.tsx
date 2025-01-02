@@ -6,7 +6,7 @@ import { UserCircle, Users } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card'
 import { Button } from '@/app/components/ui/button'
 import Loading from '@/app/components/Loading/page'
-import Error from '@/app/components/Error/page'
+import Error from '@/app/components/ErrorComp'
 import { useSession } from 'next-auth/react'
 
 export default function ChooseRolePage() {
@@ -28,7 +28,7 @@ export default function ChooseRolePage() {
         })
 
         if(response.ok){
-            router.push(`/user/dashboard?name=${session?.data?.user?.name}`);
+            router.push(`/user/dashboard/${session?.data?.user?.name}`);
         }
         else{
             setError(true);
