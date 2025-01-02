@@ -1,0 +1,107 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { UserCircle, Users } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card'
+import { Button } from '@/app/components/ui/button'
+import Loading from '@/app/components/Loading/page'
+import Error from '@/app/components/Error/page'
+import { useSession } from 'next-auth/react'
+
+export default function ChooseRolePage() {
+  const session = useSession();
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(false)
+
+  const handleRoleSelection = async(role: 'CREATOR' | 'EDITOR') => {
+    setIsLoading(true)
+    try {
+        // Here you would typically make an API call to set the user's role
+        const response = await fetch('/api/role',{
+            method: 'POST',
+            body: JSON.stringify({role: role}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if(response.ok){
+            router.push(`/user/dashboard?name=${session?.data?.user?.name}`);
+        }
+        else{
+            setError(true);
+        }
+        // For now, we'll just simulate a delay and redirect
+        
+    } catch (error) {
+        console.error(error);
+        setError(true);
+    }finally{
+        setIsLoading(false);
+    }
+  }
+
+  if(isLoading){
+    return <div><Loading/></div>
+  }
+
+  if(error){
+    return <div><Error code="500" message="Internal Server Error!!"/></div>
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4">
+      <div className="max-w-4xl w-full space-y-8">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-white mb-4">Choose Your Role</h1>
+          <p className="text-xl text-gray-400">Select the role that best describes you</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-[#1E293B] border-[#334155] hover:bg-[#2D3748] transition-colors">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-white flex items-center">
+                <UserCircle className="w-8 h-8 mr-2 text-[#38BDF8]" />
+                Creator
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                I create content and manage my channel
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white"
+                onClick={() => handleRoleSelection('CREATOR')}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'Select Creator Role'}
+              </Button>
+            </CardContent>
+          </Card>
+          <Card className="bg-[#1E293B] border-[#334155] hover:bg-[#2D3748] transition-colors">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-white flex items-center">
+                <Users className="w-8 h-8 mr-2 text-[#38BDF8]" />
+                Editor
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                I edit videos for creators
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white"
+                onClick={() => handleRoleSelection('EDITOR')}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'Select Editor Role'}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
+

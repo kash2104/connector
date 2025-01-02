@@ -21,7 +21,7 @@ export default function SignInPage() {
     useEffect(() => {
         if(session.status === "authenticated"){
             if (session.data.user.role === "USER") {
-                router.push("/choose-role");
+                router.push("/user/choose-role");
               } else if (session.data.user.role === "CREATOR") {
                 router.push(`/user/dashboard?name=${session.data.user.name}`);
               } else {
