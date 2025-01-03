@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Trash2, Upload, UserMinus, Play } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
 import { Button } from '@/app/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/app/components/ui/dialog'
-import Error from '@/app/components/Error/page'
+import ErrorComp from '@/app/components/ErrorComp'
 import Loading from '@/app/components/Loading/page'
 import { useSession } from 'next-auth/react'
 import { Input } from '../../ui/input'
@@ -20,9 +20,11 @@ type WorkspaceType = {
     creator: { id: string, email: string, name: string }
 }
 
-export default function EditorWorkspacePage() {
-    const params = useSearchParams()
-    const workspaceId = params.get("workspaceId");
+type EditorWorkspacePageProps = {
+    workspaceId: string
+}
+
+export default function EditorWorkspacePage({workspaceId}: EditorWorkspacePageProps) {
     const [workspace, setWorkspace] = useState<WorkspaceType | null>(null)
     const [previewVideo, setPreviewVideo] = useState<{ title: string, url: string } | null>(null)
     // const [isUploadConfirmOpen, setIsUploadConfirmOpen] = useState(false)
@@ -198,7 +200,7 @@ export default function EditorWorkspacePage() {
     // }
 
     if (error) {
-        return <Error code={code as string} message={message as string} />
+        return <ErrorComp code={code as string} message={message as string} />
     }
     
     if (!workspace || loading) {
