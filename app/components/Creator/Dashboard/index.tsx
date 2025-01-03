@@ -1,6 +1,6 @@
 'use client';
 
-import Error from "@/app/components/Error/page";
+import ErrorComp from "@/app/components/ErrorComp";
 import Loading from "@/app/components/Loading/page";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
@@ -9,7 +9,6 @@ import { Input } from "@/app/components/ui/input";
 import { FolderOpen } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Workspace = {
@@ -18,17 +17,19 @@ type Workspace = {
   creatorId: string;
 };
 
-export default function CreatorDashboard() {
+type CreatorDashboardProps = {
+  userName : string
+}
+
+export default function CreatorDashboard({userName}:CreatorDashboardProps) {
   const session = useSession();
-  const params = useSearchParams();
-  const name = params.get("name");
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     async function fetchWorkspace() {
-      if (name === session?.data?.user?.name) {
+      if (userName === session?.data?.user?.name) {
         setLoading(true);
         setError(false);
         try {
@@ -51,7 +52,7 @@ export default function CreatorDashboard() {
     }
 
     fetchWorkspace();
-  }, [params,session]);
+  }, [userName,session]);
 
   //creatiing a new workspace
   const [newWorkspaceName, setNewWorkspaceName] = useState('')
@@ -79,11 +80,8 @@ export default function CreatorDashboard() {
         setNewWorkspaceName('')
         setIsDialogOpen(false)
     } catch (error) {
-      return(
-        <div>
-          <Error code={data.status} message={data.message}/>
-        </div>
-      )
+      console.error("Error creating workspace:", error);
+      setError(true);
     }finally{
       setIsCreating(false)
     }
@@ -93,8 +91,8 @@ export default function CreatorDashboard() {
     return <Loading />;
   }
 
-  if (error || session?.data?.user?.name !== name) {
-    return <Error code="401" message="Unauthorized"/>;
+  if (error || session?.data?.user?.name !== userName) {
+    return <ErrorComp code="401" message="Unauthorized"/>;
   }
 
   return (
@@ -149,7 +147,7 @@ export default function CreatorDashboard() {
                   asChild
                   className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-semibold py-2 px-4 rounded shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <Link href={`/user/workspace?workspaceId=${workspace.id}`}>Open Workspace</Link>
+                  <Link href={`/user/workspace/${workspace.id}`}>Open Workspace</Link>
                 </Button>
               </div>
             </CardContent>
