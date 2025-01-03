@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Trash2, Upload, UserMinus, Play } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
 import { Button } from '@/app/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/app/components/ui/dialog'
-import Error from '@/app/components/Error/page'
+import ErrorComp from '@/app/components/ErrorComp'
 import Loading from '@/app/components/Loading/page'
 import { useSession } from 'next-auth/react'
 
@@ -19,9 +19,12 @@ type WorkspaceType = {
     editors: { id: string, email: string, name: string }[]
 }
 
-export default function CreatorWorkspacePage() {
-    const params = useSearchParams()
-    const workspaceId = params.get("workspaceId");
+type CreatorWorkspacePageProps = {
+    workspaceId: string
+}
+
+export default function CreatorWorkspacePage({workspaceId}:CreatorWorkspacePageProps) {
+    
     const [workspace, setWorkspace] = useState<WorkspaceType | null>(null)
     const [previewVideo, setPreviewVideo] = useState<{ title: string, url: string } | null>(null)
     const [isUploadConfirmOpen, setIsUploadConfirmOpen] = useState(false)
@@ -150,7 +153,7 @@ export default function CreatorWorkspacePage() {
             if (response.ok) {
                 console.log('Video uploaded successfully')
                 await handleConfirmedWorkspaceDelete();
-                router.push(`/user/dashboard?name=${session?.data?.user?.name}`)
+                router.push(`/user/dashboard/${session?.data?.user?.name}`)
             }
         } catch (error) {
             console.error('Failed to upload video:', error)
@@ -170,7 +173,7 @@ export default function CreatorWorkspacePage() {
 
             if(response.ok){
                 setWorkspace(null)
-                router.push(`/user/dashboard?name=${session?.data?.user?.name}`)
+                router.push(`/user/dashboard/${session?.data?.user?.name}`)
             }
         } catch (error) {
             console.error('Failed to upload video:', error)
@@ -182,7 +185,7 @@ export default function CreatorWorkspacePage() {
     }
 
     if (error) {
-        return <Error code={code as string} message={message as string} />
+        return <ErrorComp code={code as string} message={message as string} />
     }
 
     if (!workspace || loading) {
@@ -239,7 +242,7 @@ export default function CreatorWorkspacePage() {
                             <div key={video.id} className="bg-[#0F172A] p-4 rounded-md space-y-3">
                                 <div className="relative aspect-video">
                                     <Image
-                                        src={`${process.env.VIDEO_THUMBNAIL_IMAGE_SRC}`}
+                                        src={`https://res.cloudinary.com/dbgkicjy0/image/upload/v1735731283/Connector/iz3l4qpuxwo74fhlctul.jpg`}
                                         alt={video.title}
                                         layout="fill"
                                         objectFit="cover"
