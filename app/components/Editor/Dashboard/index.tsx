@@ -1,6 +1,6 @@
 'use client';
 
-import Error from "@/app/components/Error/page";
+import ErrorComp from "@/app/components/ErrorComp";
 import Loading from "@/app/components/Loading/page";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
@@ -18,17 +18,19 @@ type Workspace = {
   creatorId: string;
 };
 
-export default function EditorDashboard() {
+type EditorDashboardProps = {
+  userName : string
+}
+
+export default function EditorDashboard({userName}:EditorDashboardProps) {
   const session = useSession();
-  const params = useSearchParams();
-  const name = params.get("name");
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     async function fetchWorkspace() {
-      if (name === session?.data?.user?.name) {
+      if (userName === session?.data?.user?.name) {
         setLoading(true);
         setError(false);
         try {
@@ -51,7 +53,7 @@ export default function EditorDashboard() {
     }
 
     fetchWorkspace();
-  }, [params,session]);
+  }, [userName,session]);
 
   //creatiing a new workspace
   const [newWorkspaceId, setNewWorkspaceId] = useState('')
@@ -81,7 +83,7 @@ export default function EditorDashboard() {
     } catch (error) {
       return(
         <div>
-          <Error code={data.status} message={data.message}/>
+          <ErrorComp code={data.status} message={data.message}/>
         </div>
       )
     }finally{
@@ -93,8 +95,8 @@ export default function EditorDashboard() {
     return <Loading />;
   }
 
-  if (error || session?.data?.user?.name !== name) {
-    return <Error code="401" message="Unauthorized"/>;
+  if (error || session?.data?.user?.name !== userName) {
+    return <ErrorComp code="401" message="Unauthorized"/>;
   }
 
   return (
@@ -149,7 +151,7 @@ export default function EditorDashboard() {
                   asChild
                   className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-semibold py-2 px-4 rounded shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <Link href={`/user/workspace?workspaceId=${workspace.id}`}>Open Workspace</Link>
+                  <Link href={`/user/workspace/${workspace.id}`}>Open Workspace</Link>
                 </Button>
               </div>
             </CardContent>
