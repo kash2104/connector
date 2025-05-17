@@ -18,8 +18,7 @@ export default function ChooseRolePage() {
   const handleRoleSelection = async(role: 'CREATOR' | 'EDITOR') => {
     setIsLoading(true)
     try {
-        // Here you would typically make an API call to set the user's role
-        const response = await fetch('/api/role',{
+        const response = await fetch(`/api/role`,{
             method: 'POST',
             body: JSON.stringify({role: role}),
             headers: {
@@ -33,7 +32,6 @@ export default function ChooseRolePage() {
         else{
             setError(true);
         }
-        // For now, we'll just simulate a delay and redirect
         
     } catch (error) {
         console.error(error);

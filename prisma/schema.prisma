@@ -13,18 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String
-  role      UserRole  @default(USER)
+model User {
+  id    String   @id @default(cuid())
+  email String   @unique
+  name  String
+  role  UserRole @default(USER)
 }
 
 model Creator {
   id         String      @id @default(cuid())
   email      String      @unique
   name       String
-  workspaces Workspace[] 
+  workspaces Workspace[]
 }
 
 model Editor {
@@ -32,42 +32,27 @@ model Editor {
   email      String      @unique
   name       String
   workspaces Workspace[] @relation("EditorWorkspaces")
-
 }
 
 model Workspace {
-  id         String      @id @default(cuid())
-  name       String      // Name of the workspace (e.g., "Channel Workspace")
-  creator    Creator     @relation(fields: [creatorId], references: [id])
-  creatorId  String
-  editors    Editor[]    @relation("EditorWorkspaces") 
-  videos     Video[]     
+  id        String   @id @default(cuid())
+  name      String // Name of the workspace (e.g., "Channel Workspace")
+  creator   Creator  @relation(fields: [creatorId], references: [id])
+  creatorId String
+  editors   Editor[] @relation("EditorWorkspaces")
+  videos    Video[]
 }
 
 model Video {
-  id               String    @id @default(cuid())
-  // filename         String
-  // cloudStoragePath String
-  videoUrl         String
-  title            String
-  description      String
-  thumbnailUrl     String
-  tags             String[]
-  status           VideoStatus
-  workspace        Workspace @relation(fields: [workspaceId], references: [id])
-  workspaceId      String    
+  id          String    @id @default(cuid())
+  title       String
+  videoUrl    String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
 }
 
-enum VideoStatus{
-  PENDING
-  APPROVED
-}
-
-enum UserRole{
+enum UserRole {
   CREATOR
   USER
   EDITOR
 }
-
-
-

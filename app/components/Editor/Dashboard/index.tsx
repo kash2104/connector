@@ -34,7 +34,7 @@ export default function EditorDashboard({userName}:EditorDashboardProps) {
         setLoading(true);
         setError(false);
         try {
-          const response = await fetch("/api/user", { method: "GET" });
+          const response = await fetch(`/api/user`, { method: "GET" });
           const data = await response.json();
 
           if (!data.success) {
@@ -68,7 +68,7 @@ export default function EditorDashboard({userName}:EditorDashboardProps) {
     let data;
     try {
       const response = await fetch(
-        '/api/workspace/join-workspace',
+        `/api/workspace/join-workspace`,
         {
           method: 'POST', 
           body: JSON.stringify({workspaceId: newWorkspaceId.trim()}), 

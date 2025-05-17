@@ -33,7 +33,7 @@ export default function CreatorDashboard({userName}:CreatorDashboardProps) {
         setLoading(true);
         setError(false);
         try {
-          const response = await fetch("/api/user", { method: "GET" });
+          const response = await fetch(`/api/user`, { method: "GET" });
           const data = await response.json();
 
           if (!data.success) {
@@ -43,7 +43,7 @@ export default function CreatorDashboard({userName}:CreatorDashboardProps) {
           setWorkspaces(data.workspaces);
           setLoading(false);
         } catch (err) {
-          console.error("Error fetching workspaces:", err);
+          // console.error("Error fetching workspaces:", err);
           setError(true);
         } 
       } else {

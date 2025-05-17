@@ -1,8 +1,9 @@
 import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/db";
-import { cloudConnect, deleteFromCloud } from "@/lib/config";
+import s3Client from "@/lib/config";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 
 export async function DELETE(req: NextRequest){
@@ -56,31 +57,20 @@ export async function DELETE(req: NextRequest){
                 {status:404}
             )
         }
+
+        const params = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: video?.title
+        }
+        const command = new DeleteObjectCommand(params);
+        const videoDelete = await s3Client.send(command);
         
-        await cloudConnect();
-
-        // const thumbnailDelete = await deleteFromCloud(data.thumbnailPublicId, "image");
-        const videoDelete = await deleteFromCloud(data.videoPublicId, "video");
-
         if(!videoDelete){
             return NextResponse.json(
                 {status:false, message:"Error deleting from cloud"},
                 {status:500}
             )
         }
-
-        // await prisma.workspace.update({
-        //     where:{
-        //         id: workspaceId as string
-        //     },
-        //     data:{
-        //         videos:{
-        //             disconnect:{
-        //                 id: video?.id
-        //             }
-        //         }
-        //     }
-        // })
 
         await prisma.video.delete({
             where:{

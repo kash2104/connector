@@ -1,6 +1,8 @@
 import { authOptions } from "@/lib/auth-options";
+import s3Client from "@/lib/config";
 import prisma from "@/lib/db";
-import { read } from "fs";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { google } from "googleapis";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -74,6 +76,14 @@ export async function POST(req: NextRequest){
             auth: oauth2Client
         })
 
+        const getObjectParams = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: video.title
+        };
+        const command = new GetObjectCommand(getObjectParams);
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+        video.videoUrl = url;
+
         const videoResponse = await fetch(video.videoUrl);
         if (!videoResponse.ok || !videoResponse.body) {
             return NextResponse.json(
@@ -81,7 +91,7 @@ export async function POST(req: NextRequest){
                 { status: 500 }
             );
         }
-
+        
         const readableStream = Readable.from(videoResponse.body as any);
 
         let result;
@@ -91,8 +101,6 @@ export async function POST(req: NextRequest){
                 requestBody: {
                     snippet: {
                         title: video.title,
-                        // description: video.description,
-                        // tags: video.tags,
                     },
                     status: { privacyStatus: "private" },
                 },
@@ -107,42 +115,19 @@ export async function POST(req: NextRequest){
             );
         }
 
-        // let youtubeVideoId = result?.data.id;
+        if(!result){
+            return NextResponse.json(
+                {success:false, message:"Failed to upload video to youtube"},
+                {status:500}
+            )
+        }
 
-        // //set the thubmnail
-        // try {
-        //     const thumbnailResponse = await fetch(video.thumbnailUrl);
-        //     if (!thumbnailResponse.ok || !thumbnailResponse.body) {
-        //         return NextResponse.json(
-        //             { success: false, message: "Failed to fetch thumbnail content" },
-        //             { status: 500 }
-        //         );
-        //     }
-
-        //     const thumbnailStream = Readable.from(thumbnailResponse.body as any);
-
-        //     await youtube.thumbnails.set({
-        //         videoId: youtubeVideoId!,
-        //         media: {
-        //             body: thumbnailStream,
-        //         },
-        //     });
-        // } catch (error:any) {
-        //     return NextResponse.json(
-        //         { success: false, message: `YouTube API thumbnail error: ${error.message}` },
-        //         { status: 500 }
-        //     );
-        // }
-       
-
-        await prisma.video.update({
-            where:{
-                id: videoId
-            },
-            data:{
-                status: "APPROVED"
+        await fetch(`${process.env.NEXTAUTH_URL}/api/workspace?workspace=${video.workspaceId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
             }
-        })
+        });
 
         return NextResponse.json(
             {success: true, message: "Video uploaded to youtube", result: result?.data},

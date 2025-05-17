@@ -1,8 +1,10 @@
 import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/db";
-import { cloudConnect, deleteFromCloud } from "@/lib/config";
+import s3Client from "@/lib/config";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export async function GET(req: NextRequest){
     try {
@@ -55,6 +57,17 @@ export async function GET(req: NextRequest){
                 {success: false, message: "Workspace not found"},
                 {status:401}
             )
+        }
+
+        for(const video of workspace.videos){
+
+            const getObjectParams = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: video.title
+            };
+            const command = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+            video.videoUrl = url;
         }
         
     
@@ -175,26 +188,28 @@ export async function DELETE(req:NextRequest){
                 {status:403}
             )
         }
-        
-        await cloudConnect();
-        //delete the videos in the workspace i.e. delete workspace.videos from db as well as cloud
-        for(const video of workspace.videos){
-            const videopart = video.videoUrl.split("/");
-            const videoid = videopart[videopart.length - 1].split(".")[0];
-            const videopublicId = `Connector/videos/${videoid}`;
-            await deleteFromCloud(videopublicId, "video");
 
-            // const thumbnailpart = video.thumbnailUrl.split("/");
-            // const thumbnailid = thumbnailpart[thumbnailpart.length - 1].split(".")[0];
-            // const thumbnailpublicId = `Connector/thumbnails/${thumbnailid}`;
-            // await deleteFromCloud(thumbnailpublicId, "image");
-
-            await prisma.video.delete({
-                where:{
-                    id: video.id
+        if(workspace.videos.length > 0){
+            //deleting from s3
+            for(const video of workspace.videos){
+                const params = {
+                    Bucket: process.env.BUCKET_NAME,
+                    Key: video.title
                 }
-            })
+                const command = new DeleteObjectCommand(params);
+                await s3Client.send(command);
+            }
+    
+            //deleting the videos from database
+            for(const video of workspace.videos){
+                await prisma.video.delete({
+                    where:{
+                        id: video.id
+                    }
+                })
+            }
         }
+        
         //remove the workspace from the editors of that workspace i.e. editor.workspaces array
         for(const editor of workspace.editors){
             await prisma.editor.update({
