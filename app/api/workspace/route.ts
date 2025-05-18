@@ -76,9 +76,9 @@ export async function GET(req: NextRequest){
             {status: 200}
         )
         
-    } catch (error) {
+    } catch (error:any) {
         return NextResponse.json(
-            {success:false, message:"Error while getting worskpaces"},
+            {success:false, message:`Error while getting worskpaces: ${error.message}`},
             {status: 500}
         )
     }
