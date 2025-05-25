@@ -92,14 +92,14 @@ const flowStepsData = [
 
 export default function HeroPage() {
   const [currentAudience, setCurrentAudience] = useState("Creators");
-  const audiences = ["Creators", "Editors","Freelancers"];
-
+  
   useEffect(() => {
+    const audiences = ["Creators", "Editors","Freelancers"];
     const intervalId = setInterval(() => {
       setCurrentAudience(prev => audiences[(audiences.indexOf(prev) + 1) % audiences.length]);
     }, 3000);
     return () => clearInterval(intervalId);
-  }, [audiences]);
+  }, []);
 
 
 
@@ -154,7 +154,7 @@ export default function HeroPage() {
               whileTap={{ scale: 0.95 }}
             >
               <Link href={"/auth"}>
-                Streamline Your Workflow 🚀 
+                Try Now 🚀 
               
               </Link>
             </motion.button>
@@ -163,7 +163,7 @@ export default function HeroPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              See It In Action <PlayCircle size={18} />
+              Watch Demo <PlayCircle size={18} />
             </motion.button>
           </motion.div>
         </motion.div>
