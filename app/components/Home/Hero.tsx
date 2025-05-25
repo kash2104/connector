@@ -155,7 +155,6 @@ export default function HeroPage() {
             >
               <Link href={"/auth"}>
                 Try Now 🚀 
-              
               </Link>
             </motion.button>
             <motion.button
