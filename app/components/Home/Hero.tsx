@@ -145,7 +145,7 @@ export default function HeroPage() {
             Simplified & Accelerated
           </motion.h1>
           <motion.p className="text-lg text-gray-400" variants={textContentVariants}>
-            Connect your video editing and publishing. Editors deliver, creators <span className="text-white">preview without downloading</span>, and approved videos launch straight to YouTube. Focus on creating, we'll handle the flow.
+            Connect your video editing and publishing. Editors deliver, creators <span className="text-white">preview without downloading</span>, and approved videos launch straight to YouTube. Focus on creating, we&apos;ll handle the flow.
           </motion.p>
           <motion.div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start" variants={textContentVariants}>
             <motion.button
