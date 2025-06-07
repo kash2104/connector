@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/db";
-import { uploadVideoS3 } from "@/lib/config";
+import { generateMultiPartPreSignedUrl, startMultipart } from "@/lib/config";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     if (!editor) {
       return NextResponse.json(
         { success: false, message: "You are not an editor" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     if (!workspace) {
       return NextResponse.json(
         { success: false, message: "this workspace doesn't exists" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     if (!editorExists) {
       return NextResponse.json(
         { success: false, message: "You are not an editor of this workspace" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -66,33 +66,55 @@ export async function POST(req: NextRequest) {
     if (!video || !title) {
       return NextResponse.json(
         { success: false, message: "video or title is missing" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     // console.log(video.type);
-    const videoUploadDetails = await uploadVideoS3(video, title);
+    // const videoUploadDetails = await uploadVideoS3(video, title);
+    const videoUploadDetails = await startMultipart(video, title);
+    // console.log(videoUploadDetails.UploadId);
 
+    const uploadId = videoUploadDetails.UploadId;
+    const fileSize = video.size;
+    const partSize = 10 * 1024 * 1024; // 10MB
+    const totalParts = Math.ceil(fileSize / partSize);
 
-    const newVideo = await prisma.video.create({
-      data: {
-        title: title,
-        workspaceId: workspaceId as string,
-        videoUrl: "",
-      }
-    });
-        
+    let presignedurls = await generateMultiPartPreSignedUrl(
+      title,
+      uploadId as string,
+      totalParts
+    );
+    // console.log(presignedurls);
+
+    // const newVideo = await prisma.video.create({
+    //   data: {
+    //     title: title,
+    //     workspaceId: workspaceId as string,
+    //     videoUrl: "",
+    //   }
+    // });
 
     return NextResponse.json(
-      { success: true, message: "Video added to workspace", video: newVideo },
-      { status: 200 },
+      {
+        success: true,
+        message: "Presigned URLs generated successfully",
+        presignedurls: presignedurls,
+        totalParts: totalParts,
+        uploadId: uploadId,
+        partSize: partSize,
+        fileSize: fileSize,
+      },
+      { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error adding video:", error);
+    console.error("Error adding video presigned urls:", error);
     return NextResponse.json(
-      { success: false, message: `Error adding video: ${error.message}` },
-      { status: 500 },
+      {
+        success: false,
+        message: `Error adding video presigned urls: ${error.message}`,
+      },
+      { status: 500 }
     );
   }
 }
-

@@ -20,6 +20,7 @@ import ErrorComp from "@/app/components/ErrorComp";
 import Loading from "@/app/components/Loading/page";
 import { useSession } from "next-auth/react";
 import { Input } from "../../ui/input";
+import { pre, video } from "motion/react-client";
 
 type WorkspaceType = {
   id: string;
@@ -44,9 +45,9 @@ export default function EditorWorkspacePage({
     title: string;
     url: string;
   } | null>(null);
- 
+
   const [error, setError] = useState(false);
- 
+
   const [loading, setLoading] = useState(false);
   const session = useSession();
   const [code, setCode] = useState<string | null>(null);
@@ -62,7 +63,7 @@ export default function EditorWorkspacePage({
       try {
         const response = await fetch(
           `/api/workspace?workspaceId=${workspaceId}`,
-          { method: "GET" },
+          { method: "GET" }
         );
         const data = await response.json();
 
@@ -117,7 +118,7 @@ export default function EditorWorkspacePage({
         {
           method: "POST",
           body: formData,
-        },
+        }
       );
       const data = await response.json();
 
@@ -127,6 +128,59 @@ export default function EditorWorkspacePage({
         setMessage(data.message);
         return;
       }
+      const presignedUrls = data.presignedurls;
+      const totalParts = data.totalParts;
+      const uploadId = data.uploadId;
+      const partSize = data.partSize;
+      const fileSize = data.fileSize;
+      const parts: { ETag: string; PartNumber: number }[] = [];
+      for (let i = 0; i < totalParts; i++) {
+        const start = i * partSize;
+        const end = Math.min(start + partSize, fileSize);
+        const chunk = videoFile.slice(start, end);
+        const presignedUrl = presignedUrls[i];
+
+        const response = await fetch(presignedUrl, {
+          method: "PUT",
+          body: chunk,
+          headers: {
+            "Content-Type": videoFile.type,
+          },
+        });
+        // console.log(response);
+        if (!response.ok) {
+          throw new Error(`Failed to upload part ${i + 1}`);
+        }
+        const etag = response.headers.get("ETag");
+        // console.log(etag);
+        if (etag) {
+          parts.push({ ETag: etag, PartNumber: i + 1 });
+        }
+      }
+
+      const completeUploadResponse = await fetch(
+        `/api/workspace/video/complete-video?workspaceId=${workspaceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: newVideoTitle.trim(),
+            uploadId: uploadId,
+            parts: parts,
+          }),
+        }
+      );
+
+      const uploadData = await completeUploadResponse.json();
+      if (!completeUploadResponse.ok || uploadData.success === false) {
+        setError(true);
+        setCode(uploadData.status);
+        setMessage(uploadData.message);
+        return;
+      }
+
       setWorkspace((prev) => {
         if (!prev) return null;
         return {
@@ -134,14 +188,13 @@ export default function EditorWorkspacePage({
           videos: [
             ...prev.videos,
             {
-              id: data.video.id,
+              id: uploadData.video.id,
               title: newVideoTitle,
-              videoUrl: data.video.videoUrl,
+              videoUrl: uploadData.video.videoUrl,
             },
           ],
         };
       });
-
     } catch (error) {
       console.error("Failed to add video:", error);
       setError(true);
@@ -194,8 +247,10 @@ export default function EditorWorkspacePage({
                 className="bg-[#0F172A] p-4 rounded-md space-y-3"
               >
                 <div className="relative aspect-video">
-                  <div className="relative rounded-md cursor-pointer bg-gray-400 overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
-                  </div>
+                  <div
+                    className="relative rounded-md cursor-pointer bg-gray-400 overflow-hidden"
+                    style={{ aspectRatio: "16 / 9" }}
+                  ></div>
                   <Button
                     variant="ghost"
                     size="lg"
@@ -285,7 +340,6 @@ export default function EditorWorkspacePage({
           </form>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }
