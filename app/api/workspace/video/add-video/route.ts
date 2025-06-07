@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     const partSize = 10 * 1024 * 1024; // 10MB
     const totalParts = Math.ceil(fileSize / partSize);
 
-    let presignedurls = await generateMultiPartPreSignedUrl(
+    const presignedurls = await generateMultiPartPreSignedUrl(
       title,
       uploadId as string,
       totalParts

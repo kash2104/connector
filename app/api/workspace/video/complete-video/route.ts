@@ -12,7 +12,7 @@ interface Part {
 
 export async function POST(req: NextRequest) {
   try {
-    let { title, uploadId, parts } = await req.json();
+    const { title, uploadId, parts } = await req.json();
 
     const params = {
       Bucket: bucketName,
