@@ -8,6 +8,8 @@ import { Button } from '@/app/components/ui/button'
 import Loading from '@/app/components/Loading/page'
 import Error from '@/app/components/ErrorComp'
 import { useSession } from 'next-auth/react'
+import { ShootingStars } from '@/app/components/ui/shooting-stars'
+import { StarsBackground } from '@/app/components/ui/stars-background'
 
 export default function ChooseRolePage() {
   const session = useSession();
@@ -50,8 +52,10 @@ export default function ChooseRolePage() {
   }
 
   return (
-    <div className=" bg-[#0F172A] flex items-center justify-center px-4 py-20">
-      <div className="max-w-4xl w-full space-y-8">
+    <div className=" bg-[#0F172A] relative flex items-center justify-center px-4 py-20">
+      <ShootingStars/>
+      <StarsBackground/>
+      <div className="max-w-4xl w-full space-y-8 relative">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Choose Your Role</h1>
           <p className="text-xl text-gray-400">Select the role that best describes you</p>
@@ -73,7 +77,7 @@ export default function ChooseRolePage() {
                 onClick={() => handleRoleSelection('CREATOR')}
                 disabled={isLoading}
               >
-                {isLoading ? 'Loading...' : 'Select Creator Role'}
+                {isLoading ? 'Loading...' : 'Start Publishing'}
               </Button>
             </CardContent>
           </Card>
@@ -93,7 +97,7 @@ export default function ChooseRolePage() {
                 onClick={() => handleRoleSelection('EDITOR')}
                 disabled={isLoading}
               >
-                {isLoading ? 'Loading...' : 'Select Editor Role'}
+                {isLoading ? 'Loading...' : 'Start Editing'}
               </Button>
             </CardContent>
           </Card>
