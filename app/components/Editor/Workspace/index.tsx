@@ -228,7 +228,7 @@ export default function EditorWorkspacePage({
         <Button
           variant="destructive"
           onClick={handleAddVideo}
-          className="w-full sm:w-auto bg-[#38BDF8] hover:bg-[#0EA5E9] text-white"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
         >
           Add Video
         </Button>
@@ -303,7 +303,7 @@ export default function EditorWorkspacePage({
           </DialogHeader>
           <form onSubmit={handleSubmitNewVideo} className="space-y-4 mt-4">
             <div>
-              <label htmlFor="video-title" className="text-[#38BDF8]">
+              <label htmlFor="video-title" className="text-blue-400">
                 Video Title
               </label>
               <Input
@@ -317,7 +317,7 @@ export default function EditorWorkspacePage({
             </div>
 
             <div>
-              <label htmlFor="video-file" className="text-[#38BDF8]">
+              <label htmlFor="video-file" className="text-blue-400">
                 Choose Video File
               </label>
               <Input
@@ -326,14 +326,14 @@ export default function EditorWorkspacePage({
                 accept="video/*"
                 onChange={handleVideoUpload}
                 // className="bg-[#0F172A] border-[#334155] text-white"
-                className="bg-[#0F172A] border-[#334155] text-[#38BDF8] mt-1 file:bg-[#38BDF8] file:text-[#0F172A] file:border-0 file:rounded-md file:px-2 file:py-[0.75] file:mr-2 hover:file:bg-[#0EA5E9]"
+                className="bg-[#0F172A] border-[#334155] text-blue-400 mt-1 file:bg-blue-400 file:text-[#0F172A] file:border-0 file:rounded-md file:px-2 file:py-[0.75] file:mr-2 hover:file:bg-blue-500"
               />
             </div>
 
             <Button
               type="submit"
               disabled={!newVideoTitle || !videoFile}
-              className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               Add Video
             </Button>
