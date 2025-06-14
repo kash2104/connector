@@ -50,7 +50,7 @@ export default function ChooseRolePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4">
+    <div className=" bg-[#0F172A] flex items-center justify-center px-4 py-20">
       <div className="max-w-4xl w-full space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Choose Your Role</h1>
@@ -59,17 +59,17 @@ export default function ChooseRolePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="bg-[#1E293B] border-[#334155] hover:bg-[#2D3748] transition-colors">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-white flex items-center">
-                <UserCircle className="w-8 h-8 mr-2 text-[#38BDF8]" />
+              <CardTitle className="text-2xl font-bold text-white flex justify-center items-center">
+                <UserCircle className="w-8 h-8 mr-2 text-blue-400" />
                 Creator
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-gray-400 text-md text-center">
                 I create content and manage my channel
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button 
-                className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-colors duration-300 w-full"
                 onClick={() => handleRoleSelection('CREATOR')}
                 disabled={isLoading}
               >
@@ -79,17 +79,17 @@ export default function ChooseRolePage() {
           </Card>
           <Card className="bg-[#1E293B] border-[#334155] hover:bg-[#2D3748] transition-colors">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-white flex items-center">
-                <Users className="w-8 h-8 mr-2 text-[#38BDF8]" />
+              <CardTitle className="text-2xl font-bold text-white flex justify-center items-center">
+                <Users className="w-8 h-8 mr-2 text-blue-400" />
                 Editor
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-gray-400 text-md text-center">
                 I edit videos for creators
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button 
-                className="w-full bg-[#38BDF8] hover:bg-[#0EA5E9] text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-colors duration-300 w-full"
                 onClick={() => handleRoleSelection('EDITOR')}
                 disabled={isLoading}
               >

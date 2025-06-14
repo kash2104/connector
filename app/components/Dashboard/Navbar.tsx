@@ -11,11 +11,11 @@ const Navbar = () => {
 
   return (
     <nav className="bg-[#1E293B] text-white p-4 flex justify-between items-center">
-      <div className="text-2xl font-bold text-[#38BDF8]">Connector</div>
+      <div className="text-2xl font-bold text-blue-400">Connector</div>
       <Button 
         onClick={handleLogout}
         variant="ghost" 
-        className="text-gray-300 hover:text-[#38BDF8] transition-colors text-lg"
+        className="text-gray-300 hover:text-blue-400 transition-colors text-lg"
       >
         <LogOut className="mr-2" size={20} />
         Logout
