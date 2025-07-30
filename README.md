@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Connector
 
-## Getting Started
+Connector is a Next.js-based web application designed to streamline video collaboration and video uploads to youtube.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Users
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Creator: Preview videos in app and upload them to youtube.
+- Editors: Access assigned workspaces, upload videos to workspaces and preview them in app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Workspace
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Create workspaces for different videos to keep them separated.
+- Add editors to workspaces via workspace ids.
 
-## Learn More
+Video
 
-To learn more about Next.js, take a look at the following resources:
+- Easy video uploads and management.
+- In-app previews and 1 click publish to youtube.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Overview
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<img width="1234" height="776" alt="Image" src="https://github.com/user-attachments/assets/d4dbc736-ea06-4490-9775-ea0035f71971" />
